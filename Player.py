@@ -1,5 +1,6 @@
 # Player.py
 import numpy as np
+import itertools
 
 class BelotePlayer(object):
     def __init__(self, id : int):
@@ -66,3 +67,17 @@ class BelotePlayer(object):
         legal_moves = self.get_legal_moves(belote_game)
         card = np.random.choice(legal_moves, 1, replace=False)[0]
         return card.id
+    
+    def get_all_possible_states(self, belote_game):
+        remaining_cards = []
+        other_players = [p for p in belote_game.players if p.id != self.id ]
+        other_card_counts = [len(p.hand) for p in other_players]
+        for player in other_players:
+            remaining_cards.extend([c.id for c in player.hand])
+        possible_states = []
+        for group1 in itertools.combinations(remaining_cards, other_card_counts[0]):
+            remaining_after_group1 = [c for c in remaining_cards if c not in group1]
+            for group2 in itertools.combinations(remaining_after_group1, other_card_counts[1]):
+                group3 = [c for c in remaining_after_group1 if c not in group2]
+                possible_states.append([list(group1), list(group2), group3])
+        return possible_states

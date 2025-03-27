@@ -8,8 +8,3 @@ class Node(object):
         self.actions_tried = []
         self.team = team
         self.inc_action = inc_action
-
-class SearchTree(object):
-    def __init__(self, root):
-        self.root = root
-        self.nodes = []

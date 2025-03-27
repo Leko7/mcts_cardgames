@@ -1,8 +1,9 @@
 # UCT.py
 import numpy as np
+import copy
 from Node import Node
 from Game import BeloteGame
-import copy
+from Card import BeloteCard12
 
 def best_child(node, game, c):
     values = [((child.total_reward)/(child.n_visits)) + c*np.sqrt((2*np.log(node.n_visits))/(child.n_visits)) for child in node.children]
@@ -89,3 +90,24 @@ def uct_search(game, max_steps = 5):
         cards_on_table=cards_on_table
     )
     return (best_child(root, simu_game, c=0)).inc_action
+
+
+def uct_all_possible_worlds(game, player_id, max_steps = 5):
+    best_actions = []
+    possible_states = game.players[player_id].get_all_possible_states(game)
+    for i in range(len(possible_states)):
+        players = copy.deepcopy(game.players)
+        other_players = [p for p in players if p.id != player_id]
+        for j, player in enumerate(other_players):
+            player.hand = [BeloteCard12(id) for id in possible_states[i][j]]
+        attack_tricks = copy.deepcopy(game.attack_tricks)
+        defense_tricks = copy.deepcopy(game.defense_tricks)
+        cards_on_table = copy.deepcopy(game.cards_on_table)
+        simu_game = BeloteGame(
+            players=players,
+            attack_tricks=attack_tricks,
+            defense_tricks=defense_tricks,
+            cards_on_table=cards_on_table
+        )
+        best_actions.append(uct_search(simu_game, max_steps=max_steps))
+    return max(set(best_actions), key=best_actions.count)
