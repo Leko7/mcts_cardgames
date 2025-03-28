@@ -24,5 +24,6 @@ Further Work:
 1. Increase number of games in each case.
 2. Experiment with more settings in UCT (rule based vs UCT)
 3. Implement Imperfect Information Setting
+4. Also Experiment with basic MCTS i.e. choosing child randomly.
 
 
